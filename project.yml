@@ -1,0 +1,33 @@
+# Go2UpdateURL (below, in properties): the address of manifest.json from scripts/publish-update.py.
+# Empty: the app has no Update button. CFBundleVersion is the app's number: raise it when the Swift
+# code changes in a way an update of the editor needs (publish-update.py --min-shell).
+# The Info.plist is generated from `info.properties` below: edit it here, not in Info.plist.
+# Generate the Xcode project with XcodeGen:  brew install xcodegen && cd ios && ./build.sh
+name: Go2Blocks
+options:
+  bundleIdPrefix: eu.example        # change to your own, e.g. cz.myschool
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  Go2Blocks:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: Go2Blocks
+        excludes: ["web/**"]
+      - path: Go2Blocks/web
+        type: folder                # copied as a folder: the web app, as built by ../ui
+        buildPhase: resources
+    info:
+      path: Go2Blocks/Info.plist
+      properties: {"CFBundleDisplayName": "Go2 Blocks", "CFBundleShortVersionString": "1.0", "CFBundleVersion": "1", "LSRequiresIPhoneOS": true, "UIRequiresFullScreen": true, "UIStatusBarHidden": true, "UISupportedInterfaceOrientations": ["UIInterfaceOrientationLandscapeLeft", "UIInterfaceOrientationLandscapeRight"], "UISupportedInterfaceOrientations~ipad": ["UIInterfaceOrientationLandscapeLeft", "UIInterfaceOrientationLandscapeRight"], "UILaunchScreen": {"UIColorName": "LaunchBackground", "UIImageName": "LaunchLogo"}, "UIApplicationSceneManifest": {"UIApplicationSupportsMultipleScenes": false, "UISceneConfigurations": {"UIWindowSceneSessionRoleApplication": [{"UISceneConfigurationName": "Default Configuration", "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"}]}}, "NSAppTransportSecurity": {"NSAllowsLocalNetworking": true}, "NSLocalNetworkUsageDescription": "Go2 Blocks talks to the robot dog on its Wi-Fi network.", "NSMicrophoneUsageDescription": "Go2 Blocks records the sounds you choose to record for your programs.", "Go2UpdateURL": ""}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: eu.example.go2blocks
+        TARGETED_DEVICE_FAMILY: "2"      # iPad only
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_FILE: Go2Blocks/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Go2 Blocks" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Go2 Blocks</title>
+    <link rel="icon" href="data:," />
+    <style>
+      /* The loading screen: in the page itself, so it shows the moment the page does. */
+      #splash { position: fixed; inset: 0; z-index: 99000; display: flex; flex-direction: column; align-items: center;
+        justify-content: center; gap: 28px; background: #f4f7fb; transition: opacity 0.35s ease; }
+      #splash.done { opacity: 0; pointer-events: none; }
+      #splash img { width: min(36vw, 200px); height: auto; }
+      #splash .bar { width: min(52vw, 260px); height: 6px; border-radius: 3px; background: #dbe2ee; overflow: hidden; }
+      #splash .bar i { display: block; height: 100%; width: 6%; border-radius: 3px; background: #4c97ff;
+        transition: width 6s cubic-bezier(0.1, 0.8, 0.2, 1); }
+      #splash .bar i.fast { transition: width 0.25s ease-out; }
+    </style>
+    <script type="module" src="/assets/index-m42grFQy.js"></script>
+    <link rel="stylesheet" href="/assets/index-CMCY1fKK.css">
+  </head>
+  <body>
+    <div id="splash" aria-hidden="true"><img src="/assets/splash-logo.png" alt="" /><div class="bar"><i></i></div></div>
+    <script>
+      // Progress of the loading screen: the editor calls go2Progress(0-100) as it starts and
+      // go2Ready() when it is up. It never stays: after 15 s it goes by itself.
+      (function () {
+        var bar = document.querySelector("#splash .bar i");
+        var splash = document.getElementById("splash");
+        requestAnimationFrame(function () { requestAnimationFrame(function () { bar.style.width = "70%"; }); });
+        window.go2Progress = function (percent) { bar.className = "fast"; bar.style.width = percent + "%"; };
+        var gone = false;
+        window.go2Ready = function () {
+          if (gone) return;
+          gone = true;
+          window.go2Progress(100);
+          if (window.go2native && window.go2native.ready) window.go2native.ready();
+          setTimeout(function () { splash.className = "done"; setTimeout(function () { splash.remove(); }, 400); }, 200);
+        };
+        setTimeout(window.go2Ready, 15000);
+      })();
+    </script>
+    <script>
+      // If the editor cannot start, say why on screen instead of leaving a white page.
+      (function () {
+        function show(text) {
+          var box = document.getElementById("startupError");
+          if (!box) {
+            box = document.createElement("pre");
+            box.id = "startupError";
+            box.style.cssText = "position:fixed;z-index:99999;left:0;right:0;top:0;margin:0;padding:16px;background:#fff0f0;color:#b71c1c;font:14px/1.4 Menlo,monospace;white-space:pre-wrap;max-height:60vh;overflow:auto";
+            document.body.appendChild(box);
+          }
+          box.textContent += text + "\n";
+        }
+        window.addEventListener("error", function (e) {
+          var t = e.target;
+          if (t && t !== window && (t.src || t.href)) show("Could not load " + (t.src || t.href));
+          else show((e.message || "Error") + (e.filename ? "\n  at " + e.filename + ":" + e.lineno : ""));
+        }, true);
+        window.addEventListener("unhandledrejection", function (e) {
+          show("Error: " + (e.reason && (e.reason.stack || e.reason.message) || e.reason));
+        });
+        setTimeout(function () {
+          if (!document.querySelector(".blocklySvg")) show("The editor did not start (nothing was drawn after 6 s).");
+        }, 6000);
+      })();
+    </script>
+    <header class="topbar">
+      <div class="brand"><span id="brandMark" class="brand-mark"></span><span>Go2 Blocks</span></div>
+      <input id="projectName" class="project-name" maxlength="60" />
+      <div class="file-buttons">
+        <button id="btnNew" class="btn"></button>
+        <button id="btnExamples" class="btn"></button>
+        <button id="btnOpen" class="btn"></button>
+        <button id="btnSave" class="btn"></button>
+      </div>
+      <div class="mode-toggle" role="group">
+        <button id="modeRobot" class="mode"></button>
+        <button id="modePractice" class="mode"></button>
+      </div>
+      <button id="btnLang" class="btn" type="button"></button>
+      <button id="btnUpdate" class="btn icon-only" type="button" hidden></button>
+      <button id="statusPill" class="status-pill"></button>
+    </header>
+
+    <main class="layout">
+      <section class="editor">
+        <div id="blocklyDiv"></div>
+        <div id="runLock" class="run-lock" hidden></div>
+      </section>
+      <aside class="side">
+        <div class="controls">
+          <button id="btnGo" class="big-btn go"></button>
+          <button id="btnStop" class="big-btn stop"></button>
+        </div>
+        <div class="hint-row">
+          <p id="stopHint" class="hint"></p>
+          <button id="btnMusic" class="music-toggle" type="button"></button>
+        </div>
+        <div class="stage-wrap">
+          <canvas id="stage"></canvas>
+          <div id="stageBubble" class="bubble" hidden></div>
+          <div id="stagePose" class="stage-pose"></div>
+          <div id="stageSees" class="stage-sees" hidden></div>
+          <div id="colorCards" class="color-cards" hidden></div>
+        </div>
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+      </aside>
+    </main>
+
+    <dialog id="dialog" class="dialog">
+      <form method="dialog">
+        <h2 id="dialogTitle"></h2>
+        <div id="dialogBody"></div>
+        <menu><button class="btn" value="close" id="dialogClose"></button></menu>
+      </form>
+    </dialog>
+    <input id="fileInput" type="file" accept=".json,.go2.json" hidden />
+  </body>
+</html>
