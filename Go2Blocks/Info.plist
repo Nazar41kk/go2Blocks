@@ -21,7 +21,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>Go2UpdateURL</key>
-	<string></string>
+	<string>https://nazar41kk.github.io/go2Blocks/manifest.json</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

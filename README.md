@@ -37,7 +37,13 @@ VPN & Device Management.
 
 Almost everything we change (blocks, texts, sounds, fixes) is in the editor, which is a web app inside the iPad app. The iPad app can fetch a newer editor from a web address, so you do not have to touch every iPad again. Changes to the Swift code in `ios/Go2Blocks/*.swift` still need a normal install (Xcode or TestFlight).
 
-**Set up once**
+**Using this repository as the host (GitHub Pages)** is the simplest: no other server.
+1. Publish into the repo's `docs/` folder: `python3 scripts/publish-update.py --out ios/docs` (from the full project; the script refuses a folder that holds other files).
+2. In this folder: `git add docs && git commit -m "Update" && git push`.
+3. Once: on GitHub, repository Settings, Pages, *Deploy from a branch*, branch `main`, folder `/docs`. After a minute the address `https://<your-name>.github.io/<repo>/manifest.json` works. (`https://raw.githubusercontent.com/<your-name>/<repo>/main/docs/manifest.json` also works without Pages, but GitHub may throttle many iPads on one school network.) GitHub can take up to about 10 minutes to show a new publish.
+4. `Go2UpdateURL` in `project.yml` already points to that address for this repository. Anyone who can push to the repository controls the app's editor, so use two-factor sign-in on the GitHub account.
+
+**Set up once** (with any other host)
 1. Host a folder on any static web host with https: GitHub Pages (a public repo, or a paid plan for a private one), Netlify, Cloudflare Pages, or the school's web server. (Plain `http://` is accepted only for addresses on the school's own network, like `http://192.168.1.5/...`.)
 2. Put the address of `manifest.json` in `ios/project.yml` under `info.properties` as `Go2UpdateURL`, for example `https://yourname.github.io/go2-updates/manifest.json`. Run `./build.sh` and install the app once more. Until the address is set, the app has no Update button.
 
